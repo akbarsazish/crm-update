@@ -1,0 +1,55 @@
+
+.myClock{
+    direction: ltr;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.clock{
+	display:inline;
+}
+
+.alarm{
+	display:none;
+	margin:10px 0px 0px 0px;
+}
+
+.alarm a{
+	text-decoration:none;
+	padding:5px 10px 5px 10px;
+	color:#FFF;
+	background-color:#026729;
+	border-radius:5px;
+}
+
+.alarm a:hover{
+	text-decoration:none;
+	padding:4px 9px 4px 9px;
+	color:#fefefe;
+	background-color:#026729;
+	border-radius:5px;
+}
+
+#set{
+	text-decoration:none;
+	padding:5px 10px 5px 10px;
+	color:#FFF;
+	background-color:#F3A829;
+	border-radius:5px;
+    margin: 0 auto;
+    width: 133px;
+    font-size: 16px;
+}
+
+#set:hover{
+	text-decoration:none;
+	color:#fefefe;
+	background-color:#fa9e00;
+	border-radius:5px;
+}
+
+#altime{
+    margin: 0 auto;
+    width: 130px;
+    font-size: 16px;
+    border:1px dotted gray;
+}
