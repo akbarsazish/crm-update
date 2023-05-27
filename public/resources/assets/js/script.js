@@ -16,7 +16,7 @@ document.querySelector(".fa-bars")
         // backdrop.classList.add('show');
     });
 
-var baseUrl = "http://192.168.10.26:8080";
+var baseUrl = "http://192.168.10.27:8080";
 var myVar;
 function setAdminStuffForAdmin(element, adminTypeId, driverId) {
     $(element).find("input:radio").prop("checked", true);
@@ -10553,16 +10553,19 @@ $("#salesReportForm").on("submit", function (e) {
         data: $(this).serialize(),
         success: function (data) {
             $("#salesReportList").empty();
-            let rows = data.map((element, index) =>
-             `<tr onclick="selectTableRow(this); getCustomerInformation(`+element.PSN+`) ">
-            <td>` + (index + 1) + `</td><td>` + element.Name + `</td><td>` + element.FactDate + `</td><td>` + parseInt((element.sumAllMoney || "")).toLocaleString("en-us") + `</td><td style="width: 116px">` + element.PCode + `</td></tr>`)
+            let rows = data.map((element, index) =>{
+                if(element.FactType==3){
+                   return `<tr onclick="selectTableRow(this); getCustomerInformation(`+element.PSN+`) ">
+                    <td>` + (index + 1) + `</td><td>` + element.Name + `</td><td>` + element.FactDate + `</td><td>` + parseInt((element.sumAllMoney || "")).toLocaleString("en-us") + `</td><td>` + parseInt((0)).toLocaleString("en-us") + `</td><td style="width: 116px">` + element.PCode + `</td></tr>`
+                }else{
+                   return `<tr onclick="selectTableRow(this); getCustomerInformation(`+element.PSN+`) ">
+                    <td>` + (index + 1) + `</td><td>` + element.Name + `</td><td>` + element.FactDate + `</td><td>` + parseInt((0)).toLocaleString("en-us") + `</td> <td>` + parseInt((element.sumAllMoney || "")).toLocaleString("en-us") + `</td> <td style="width: 116px">` + element.PCode + `</td></tr>`
+                }
+        });
+
             let sumAllMoney = data.reduce((accumulator, curValue) => {
                 return accumulator + parseInt((curValue.sumAllMoney || 0));
             }, 0);
-            // let countAllFactor = data.reduce((accumulator, curValue) => {
-            //     return accumulator + parseInt((curValue.CountFactor || 0));
-            // }, 0);
-
 
             $("#salesReportList").append(rows)
             $("#customersMoney").text(sumAllMoney.toLocaleString("en-us"));

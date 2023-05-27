@@ -295,14 +295,31 @@ class Product extends Controller
         }
 
         $nameCode=$request->get("nameCode");
-        $adminName=$request->get("adminName");
+        $adminId=$request->get("adminId");
         $mantaghehName=$request->get("mantaghehName");
-        $reportInfo=DB::select("SELECT * FROM (select PSN,PCode,Peopels.CompanyNo,FactDate,Name,sumAllMoney,ISNULL(adminName,'') as adminName,adminId,CRM.dbo.getCustomerMantagheh(SnMantagheh) as MantaghehName from Shop.dbo.Peopels 
-        inner Join(SELECT (NetPriceHDS/10) AS sumAllMoney,CustomerSn,FactDate FROM Shop.dbo.FactorHDS  WHERE FactType=3 and FactDate>='$firstDate' and FactDate<='$secondDate')a on a.CustomerSn=PSN 
-         left Join (SELECT CONCAT(name,lastName) as adminName,admin.id as adminId,customer_id  from CRM.dbo.crm_admin admin left join CRM.dbo.crm_customer_added added on admin.id=added.admin_id and returnState=0)admins on admins.customer_id=PSN
-         )b
-         where (PCode Like'%$nameCode%' or Name LIKE '%$nameCode%') AND CompanyNo=5  and MantaghehName like'%$mantaghehName%' and adminName like '%$adminName%' order by PSN 
-        ");
+        $factType=$request->get("factType");
+        $factTypeQuery="FactType=$factType AND";
+        if(strlen($factType)<1){
+            $factTypeQuery="";
+        }
+        $adminType=Session::get("adminType");
+        $joinType="INNER JOIN";
+        if($adminType==5){
+            $joinType="LEFT JOIN";
+        }
+        $adminId=Session::get("asn");
+        $reportInfo=array();
+        if($adminId==0){
+            $reportInfo=DB::select("SELECT * FROM (SELECT PSN,PCode,Peopels.CompanyNo,FactDate,FactType,Name,sumAllMoney,ISNULL(adminName,'') AS adminName,adminId,CRM.dbo.getCustomerMantagheh(SnMantagheh) AS MantaghehName FROM Shop.dbo.Peopels 
+                                    INNER JOIN(SELECT (NetPriceHDS/10) AS sumAllMoney,CustomerSn,FactDate,FactType FROM Shop.dbo.FactorHDS  WHERE $factTypeQuery FactDate>='$firstDate' AND FactDate<='$secondDate')a ON a.CustomerSn=PSN 
+                                    $joinType (SELECT CONCAT(name,lastName) AS adminName,admin.id AS adminId,customer_id  FROM CRM.dbo.crm_admin admin JOIN CRM.dbo.crm_customer_added added ON admin.id=added.admin_id AND returnState=0  and admin.id in(SELECT * FROM CRM.dbo.getAdminsOrBosses($adminId)))admins ON admins.customer_id=PSN)b
+                                    WHERE (PCode LIKE '%$nameCode%' OR Name LIKE '%$nameCode%') AND CompanyNo=5  AND MantaghehName LIKE '%$mantaghehName%' ORDER BY PSN");
+        }else{
+            $reportInfo=DB::select("SELECT * FROM (SELECT PSN,PCode,Peopels.CompanyNo,FactDate,FactType,Name,sumAllMoney,ISNULL(adminName,'') AS adminName,adminId,CRM.dbo.getCustomerMantagheh(SnMantagheh) AS MantaghehName FROM Shop.dbo.Peopels 
+                                    INNER JOIN(SELECT (NetPriceHDS/10) AS sumAllMoney,CustomerSn,FactDate,FactType FROM Shop.dbo.FactorHDS  WHERE $factTypeQuery FactDate>='$firstDate' AND FactDate<='$secondDate')a ON a.CustomerSn=PSN 
+                                    $joinType (SELECT CONCAT(name,lastName) AS adminName,admin.id AS adminId,customer_id  FROM CRM.dbo.crm_admin admin JOIN CRM.dbo.crm_customer_added added ON admin.id=added.admin_id AND returnState=0  and admin.id in(SELECT * FROM CRM.dbo.getAdminsOrBosses($adminId)))admins ON admins.customer_id=PSN)b
+                                    WHERE (PCode LIKE '%$nameCode%' OR Name LIKE '%$nameCode%') AND CompanyNo=5  AND MantaghehName LIKE '%$mantaghehName%' AND adminId = $adminId ORDER BY PSN");
+        }
         return Response::json($reportInfo);
     }
 }

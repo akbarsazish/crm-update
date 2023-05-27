@@ -5127,8 +5127,7 @@ $customer->PassedDays=\Morilog\Jalali\CalendarUtils::createCarbonFromFormat('Y/m
        DB::table("CRM.dbo.crm_admin")->where("id",$adminId)->update(['username'=>"".$userName."",'name'=>"".$name."",'lastName'=>"".$lastName."",'poshtibanType'=>$poshtibanType,
                                                                        'adminType'=>$adminType,'password'=>"".$password."",'activeState'=>1,'phone'=>$phone,"bossId"=>$bossId,
                                                                        'address'=>$address,'sex'=>"".$sex."",'discription'=>"".$discription."","SaleLineId"=>$saleLine,"employeeType"=>$employeeType]);
-                                                                       
-                                       // اطلاعات پایه============
+        // اطلاعات پایه============
 
         DB::table("CRM.dbo.crm_hasAccess")->WHERE("adminId",$adminId)->update(
             [ "declareElementOppN"=>$declareElementOppED
